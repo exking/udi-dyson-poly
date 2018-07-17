@@ -1,0 +1,59 @@
+# Dyson Controller
+ND-DYSONCTRL-NAME = Dyson Controller
+ND-DYSONCTRL-ICON = GenericCtl
+CMD-CTRL-DISCOVER-NAME = Re-Discover
+ST-CTRL-ST-NAME = NodeServer Online
+
+# Dyson Purifying Fan
+ND-DYPFAN-NAME = Dyson Purifying Fan
+ND-DYPFAN-ICON = GenericRsp
+ST-PFAN-ST-NAME = Fan State
+ST-PFAN-CLITEMP-NAME = Temp C
+ST-PFAN-GV0-NAME = Temp F
+ST-PFAN-CLIHUM-NAME = Humidity
+ST-PFAN-GV1-NAME = PM2.5 (µg/㎥)
+ST-PFAN-GV2-NAME = PM10 (µg/㎥)
+ST-PFAN-VOCLVL-NAME = VOC Level
+ST-PFAN-GV3-NAME = NO₂ Level
+ST-PFAN-GV4-NAME = Oscillation
+ST-PFAN-AIRFLOW-NAME = Air Flow
+ST-PFAN-GV5-NAME = Night Mode
+ST-PFAN-GV6-NAME = Osciallation Angle Low
+ST-PFAN-GV7-NAME = Osciallation Angle High
+ST-PFAN-GV8-NAME = Carbon Filter Life
+ST-PFAN-GV9-NAME = HEPA Filter Life
+ST-PFAN-GV10-NAME = Off timer
+
+CMD-PFAN-QUERY-NAME = Query
+CMD-PFAN-DON-NAME = On
+CMD-PFAN-DOF-NAME = Off
+CMD-PFAN-SPEED-NAME = Fan Speed
+CMD-PFAN-OFFTMR-NAME = Off Timer
+CMD-PFAN-AUTO-NAME = Auto
+CMD-PFAN-ROTATE-NAME = Oscillation
+CMD-PFAN-ANGLE-NAME = Oscillation Angle
+CMD-PFAN-AFFWD-NAME = Air Flow Forward
+CMD-PFAN-AFREW-NAME = Air Flow Reverse
+CMD-PFAN-NIGHTOFF-NAME = Night Mode Off
+CMD-PFAN-NIGHTON-NAME = Night Mode On
+
+CMDP-ANGLE-L-NAME = Start Angle
+CMDP-ANGLE-H-NAME = Stop Angle
+
+FAN_SEL-0 = Off
+FAN_SEL-1 = Speed 1
+FAN_SEL-2 = Speed 2
+FAN_SEL-3 = Speed 3
+FAN_SEL-4 = Speed 4
+FAN_SEL-5 = Speed 5
+FAN_SEL-6 = Speed 6
+FAN_SEL-7 = Speed 7
+FAN_SEL-8 = Speed 8
+FAN_SEL-9 = Speed 9
+FAN_SEL-10 = Speed 10
+FAN_SEL-11 = Auto
+
+AF_SEL-0 = Forward
+AF_SEL-1 = Reverse
+
+PGM-CMD-ANGLE-FMT = /L// Oscillation Start at ${v}/ /H// Stop at ${v}/

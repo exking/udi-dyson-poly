@@ -1,0 +1,21 @@
+{
+    "name": "Dyson",
+    "docs": "https://github.com/exking/udi-dyson-poly",
+    "type": "python3",
+    "executable": "dyson-poly.py",
+    "install": "install.sh",
+    "description": "Dyson Fan Control",
+    "notice": "",
+    "shortPoll": "15",
+    "longPoll": "60",
+    "credits": [
+        {
+            "title": "NodeServer to integrate with Dyson purifying fan",
+            "author": "xKing",
+            "version": "0.0.1",
+            "date": "July 16, 2018",
+            "source": "https://github.com/exking/udi-dyson-poly",
+            "license": "https://raw.githubusercontent.com/exking/udi-dyson-poly/master/LICENSE"
+        }
+    ]
+}

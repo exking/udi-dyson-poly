@@ -1,0 +1,35 @@
+<editors>
+    <editor id="BOOL">
+        <range uom="2" subset="0,1" />
+    </editor>
+    <editor id="TEMPC">
+        <range uom="4" min="-20" max="50" prec="1" />
+    </editor>
+    <editor id="TEMPF">
+        <range uom="17" min="-4" max="122" prec="1" />
+    </editor>
+    <editor id="HUM">
+        <range uom="22" min="0" max="100" prec="0" />
+    </editor>
+    <editor id="AQVAL">
+        <range uom="56" min="0" max="200" prec="0" />
+    </editor>
+    <editor id="PFANST">
+        <range uom="25" min="0" max="11" nls="FAN_SEL" />
+    </editor>
+    <editor id="AFDIR">
+        <range uom="25" min="0" max="1" nls="AF_SEL" />
+    </editor>
+    <editor id="ANGLE">
+        <range uom="14" min="5" max="355" prec="0" />
+    </editor>
+    <editor id="PERCENT">
+        <range uom="51" min="0" max="100" prec="0" />
+    </editor>
+    <editor id="MINUTES">
+        <range uom="45" min="0" max="540" prec="0" />
+    </editor>
+    <editor id="OSCANGL">
+        <range uom="14" subset="0,45,90,180,350" />
+    </editor>
+</editors>
