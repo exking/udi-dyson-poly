@@ -12,7 +12,7 @@
         <range uom="22" min="0" max="100" prec="0" />
     </editor>
     <editor id="AQVAL">
-        <range uom="56" min="0" max="200" prec="0" />
+        <range uom="56" min="0" max="99" prec="0" />
     </editor>
     <editor id="PFANST">
         <range uom="25" min="0" max="11" nls="FAN_SEL" />
