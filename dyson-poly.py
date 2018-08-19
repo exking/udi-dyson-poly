@@ -30,7 +30,11 @@ class Controller(polyinterface.Controller):
         else:
             country = 'US'
 
-        self.dyson = DysonAccount(username, password, country)
+        try:
+            self.dyson = DysonAccount(username, password, country)
+        except Exception as ex:
+            LOGGER.error('ERROR connecting to the Dyson API: {}'.format(ex))
+            return
         logged_in = self.dyson.login()
         if not logged_in:
             LOGGER.error('Failed to login to Dyson account')
