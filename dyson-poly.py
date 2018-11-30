@@ -67,7 +67,7 @@ class Controller(polyinterface.Controller):
 
     id = 'DYSONCTRL'
     commands = {'DISCOVER': discover}
-    drivers = [{'driver': 'ST', 'value': 0, 'uom': 2}]
+    drivers = [{'driver': 'ST', 'value': 1, 'uom': 2}]
 
 
 class DysonPureFan(polyinterface.Node):
