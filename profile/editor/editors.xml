@@ -30,7 +30,7 @@
         <range uom="45" min="0" max="540" prec="0" />
     </editor>
     <editor id="HOURS">
-        <range uom="20" min="0" max="10000" prec="0" />
+        <range uom="20" min="0" max="4000" prec="0" />
     </editor>
     <editor id="OSCANGL">
         <range uom="14" subset="0,45,90,180,350" />
