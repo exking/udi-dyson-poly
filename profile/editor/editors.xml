@@ -32,4 +32,7 @@
     <editor id="OSCANGL">
         <range uom="14" subset="0,45,90,180,350" />
     </editor>
+    <editor id="QTGT">
+        <range uom="25" min="1" max="3" nls="Q_TARGET" />
+    </editor>
 </editors>

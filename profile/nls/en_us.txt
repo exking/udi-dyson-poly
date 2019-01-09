@@ -37,6 +37,37 @@ CMD-PFAN-AFREW-NAME = Air Flow Reverse
 CMD-PFAN-NIGHTOFF-NAME = Night Mode Off
 CMD-PFAN-NIGHTON-NAME = Night Mode On
 
+# Dyson Purifying Fan V1
+ND-DYPFANV1-NAME = Dyson Purifying Fan v1
+ND-DYPFANV1-ICON = GenericRsp
+ST-PFANV1-ST-NAME = Fan State
+ST-PFANV1-CLITEMP-NAME = Temp C
+ST-PFANV1-GV0-NAME = Temp F
+ST-PFANV1-CLIHUM-NAME = Humidity
+ST-PFANV1-GV1-NAME = Dust (µg/㎥)
+ST-PFANV1-VOCLVL-NAME = VOC Level
+ST-PFANV1-GV4-NAME = Oscillation
+ST-PFANV1-GV5-NAME = Night Mode
+ST-PFANV1-GV6-NAME = Quality Target
+ST-PFANV1-GV7-NAME = Standby Monitoring
+ST-PFANV1-GV8-NAME = Filter Life
+ST-PFANV1-GV10-NAME = Off timer
+
+CMD-PFANV1-QUERY-NAME = Query
+CMD-PFANV1-DON-NAME = On
+CMD-PFANV1-DOF-NAME = Off
+CMD-PFANV1-SPEED-NAME = Fan Speed
+CMD-PFANV1-OFFTMR-NAME = Off Timer
+CMD-PFANV1-AUTO-NAME = Auto
+CMD-PFANV1-OSCON-NAME = Oscillation On
+CMD-PFANV1-OSCOFF-NAME = Oscillation Off
+CMD-PFANV1-NIGHTOFF-NAME = Night Mode Off
+CMD-PFANV1-NIGHTON-NAME = Night Mode On
+CMD-PFANV1-STBYOFF-NAME = Standby Mon Off
+CMD-PFANV1-STBYON-NAME = Standby Mon On
+CMD-PFANV1-SETQAL-NAME = Quality Target
+CMD-PFANV1-RSTFLT-NAME = Reset Filter
+
 CMDP-ANGLE-L-NAME = Start Angle
 CMDP-ANGLE-H-NAME = Stop Angle
 
@@ -55,5 +86,9 @@ FAN_SEL-11 = Auto
 
 AF_SEL-0 = Forward
 AF_SEL-1 = Reverse
+
+Q_TARGET-1 = Normal
+Q_TARGET-2 = Better
+Q_TARGET-3 = Best
 
 PGM-CMD-ANGLE-FMT = /L// Oscillation Start at ${v}/ /H// Stop at ${v}/

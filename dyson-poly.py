@@ -3,8 +3,9 @@
 import polyinterface
 import sys
 from libpurecoollink.dyson import DysonAccount
-from libpurecoollink.const import DYSON_PURE_COOL, DYSON_PURE_COOL_DESKTOP, FanPower, AutoMode, OscillationV2, FanSpeed, FrontalDirection, NightMode
+from libpurecoollink.const import DYSON_PURE_COOL, DYSON_PURE_COOL_DESKTOP, DYSON_PURE_COOL_LINK_TOUR, FanPower, AutoMode, Oscillation, OscillationV2, FanSpeed, FrontalDirection, NightMode, FanMode, FanState, ResetFilter, StandbyMonitoring, QualityTarget
 from libpurecoollink.dyson_pure_state_v2 import DysonPureCoolV2State, DysonEnvironmentalSensorV2State
+from libpurecoollink.dyson_pure_state import DysonPureCoolState, DysonEnvironmentalSensorState
 
 LOGGER = polyinterface.LOGGER
 
@@ -60,8 +61,11 @@ class Controller(polyinterface.Controller):
             name = dev.name
             if not address in self.nodes:
                 if dev.product_type == DYSON_PURE_COOL or dev.product_type == DYSON_PURE_COOL_DESKTOP:
-                    LOGGER.info('Adding product: {}, name: {}'.format(dev.product_type, dev.name))
+                    LOGGER.info('Adding v2 product: {}, name: {}'.format(dev.product_type, dev.name))
                     self.addNode(DysonPureFan(self, self.address, address, name, dev))
+                elif dev.product_type == DYSON_PURE_COOL_LINK_TOUR:
+                    LOGGER.info('Adding v1 product: {}, name: {}'.format(dev.product_type, dev.name))
+                    self.addNode(DysonPureFanV1(self, self.address, address, name, dev))
                 else:
                     LOGGER.info('Found product type: {}, name: {} but it\'s not yet supported'.format(dev.product_type, dev.name))
 
@@ -258,6 +262,194 @@ class DysonPureFan(polyinterface.Node):
     commands = {
             'QUERY': query, 'DON': set_on, 'DOF': set_off, 'SPEED': set_speed, 'OFFTMR': set_off_timer, 'AUTO': set_auto, 'ROTATE': set_oscillation,
             'ANGLE': set_osc_angle, 'AFFWD': set_airflow_fwd, 'AFREW': set_airflow_rew, 'NIGHTON': set_night_on, 'NIGHTOFF': set_night_off
+               }
+
+
+class DysonPureFanV1(polyinterface.Node):
+    def __init__(self, controller, primary, address, name, device):
+        super().__init__(controller, primary, address, name)
+        self.device = device
+
+    def start(self):
+        LOGGER.info('Starting {}'.format(self.device.name))
+        self.device.auto_connect()
+        self.updateInfo()
+        self.device.add_message_listener(self.on_message)
+
+    def on_message(self, msg):
+        if isinstance(msg, DysonPureCoolState):
+            LOGGER.debug('Received v1 State message for {}'.format(self.device.name))
+            if msg.fan_state == FanState.FAN_ON.value:
+                if msg.fan_mode == FanMode.AUTO.value:
+                    self.setDriver('ST', 11)
+                else:
+                    self.setDriver('ST', int(msg.speed))
+            else:
+                self.setDriver('ST', 0)
+            if msg.oscillation == Oscillation.OSCILLATION_ON.value:
+                self.setDriver('GV4', 1)
+            else:
+                self.setDriver('GV4', 0)
+            if msg.night_mode == 'ON':
+                self.setDriver('GV5', 1)
+            else:
+                 self.setDriver('GV5', 0)
+            if msg.quality_target == QualityTarget.QUALITY_NORMAL.value:
+                self.setDriver('GV6', 1)
+            elif msg.quality_target == QualityTarget.QUALITY_BETTER.value:
+                self.setDriver('GV6', 2)
+            elif msg.quality_target == QualityTarget.QUALITY_HIGH.value:
+                self.setDriver('GV6', 3)
+            else:
+                self.setDriver('GV6', 0)
+            if msg.standby_monitoring == StandbyMonitoring.STANDBY_MONITORING_ON.value:
+                self.setDriver('GV7', 1)
+            else:
+                self.setDriver('GV7', 0)
+            self.setDriver('GV8', int(msg.filter_life))
+        elif isinstance(msg, DysonEnvironmentalSensorState):
+            LOGGER.debug('Received v1 Environmental State message for {}'.format(self.device.name))
+            temp = float(msg.temperature)
+            tempC = round(temp - 273.15, 2)
+            tempF = round(temp * 9 / 5 - 459.67, 2)
+            self.setDriver('CLITEMP', tempC)
+            self.setDriver('GV0', tempF)
+            self.setDriver('CLIHUM', int(msg.humidity))
+            self.setDriver('GV1', int(msg.dust))
+            self.setDriver('VOCLVL', int(msg.volatile_organic_compounds))
+            self.setDriver('GV10', int(msg.sleep_timer))
+        else:
+            LOGGER.warning('Unknown message received for {}'.format(self.device.name))
+        LOGGER.debug('Received message {}'.format(str(msg)))
+
+    def stop(self):
+        LOGGER.info('Stopping {}'.format(self.device.name))
+        self.device.disconnect()
+
+    def updateInfo(self):
+        LOGGER.debug(self.device.state)
+        LOGGER.debug(self.device.environmental_state)
+        if self.device.state.fan_state == FanState.FAN_ON.value:
+            if self.device.state.fan_mode == FanMode.AUTO_ON.value:
+                self.setDriver('ST', 11)
+            else:
+                self.setDriver('ST', int(self.device.state.speed))
+        else:
+            self.setDriver('ST', 0)
+        temp = float(self.device.environmental_state.temperature)
+        tempC = round(temp - 273.15, 2)
+        tempF = round(temp * 9 / 5 - 459.67, 2)
+        self.setDriver('CLITEMP', tempC)
+        self.setDriver('GV0', tempF)
+        self.setDriver('CLIHUM', int(self.device.environmental_state.humidity))
+        self.setDriver('GV1', int(self.device.environmental_state.dust))
+        self.setDriver('VOCLVL', int(self.device.environmental_state.volatile_organic_compounds))
+        if self.device.state.oscillation == Oscillation.OSCILLATION_ON.value:
+            self.setDriver('GV4', 1)
+        else:
+            self.setDriver('GV4', 0)
+        if self.device.state.night_mode == 'ON':
+            self.setDriver('GV5', 1)
+        else:
+            self.setDriver('GV5', 0)
+        self.setDriver('GV8', int(self.device.state.filter_state))
+        self.setDriver('GV9', int(self.device.state.hepa_filter_state))
+        self.setDriver('GV10', int(self.device.environmental_state.sleep_timer))
+        if self.device.state.quality_target == QualityTarget.QUALITY_NORMAL.value:
+            self.setDriver('GV6', 1)
+        elif self.device.state.quality_target == QualityTarget.QUALITY_BETTER.value:
+            self.setDriver('GV6', 2)
+        elif self.device.state.quality_target == QualityTarget.QUALITY_HIGH.value:
+            self.setDriver('GV6', 3)
+        else:
+            self.setDriver('GV6', 0)
+        if self.device.state.standby_monitoring == StandbyMonitoring.STANDBY_MONITORING_ON.value:
+            self.setDriver('GV7', 1)
+        else:
+            self.setDriver('GV7', 0)
+
+    def query(self):
+        self.reportDrivers()
+
+    def set_on(self, command):
+        self.device.set_configuration(fan_mode=FanMode.FAN)
+
+    def set_off(self, command):
+        self.device.set_configuration(fan_mode=FanMode.OFF)
+
+    def set_speed(self, command):
+        speed = int(command.get('value'))
+        if speed < 0 or speed > 11:
+            LOGGER.error('Invalid speed selection {}'.format(speed))
+        elif speed == 0:
+            self.device.set_configuration(fan_mode=FanMode.OFF)
+        elif speed == 11:
+            self.device.set_configuration(fan_mode=FanMode.AUTO)
+        else:
+            self.device.set_configuration(fan_speed=FanSpeed("%04d" % speed))
+
+    def set_off_timer(self, command):
+        timer = int(command.get('value'))
+        try:
+            self.device.set_configuration(sleep_timer=timer)
+        except Exception as ex:
+            LOGGER.error('Invalid timer value: {}'.format(ex))
+
+    def set_auto(self, command):
+        self.device.set_configuration(fan_mode=FanMode.AUTO)
+
+    def set_oscillation_on(self, command):
+        self.device.set_configuration(oscillation=Oscillation.OSCILLATION_ON)
+
+    def set_oscillation_off(self, command):
+        self.device.set_configuration(oscillation=Oscillation.OSCILLATION_OFF)
+
+    def set_standby_mon_on(self, command):
+        self.device.set_configuration(standby_monitoring=StandbyMonitoring.STANDBY_MONITORING_ON)
+
+    def set_standby_mon_off(self, command):
+        self.device.set_configuration(standby_monitoring=StandbyMonitoring.STANDBY_MONITORING_OFF)
+
+    def reset_filter_life(self, command):
+        self.device.set_configuration(reset_filter=ResetFilter.RESET_FILTER)
+
+    def set_quality(self, command):
+        quality = int(command.get('value'))
+        if quality == 1:
+            self.device.set_configuration(quality_target=QualityTarget.QUALITY_NORMAL)
+        elif quality == 2:
+            self.device.set_configuration(quality_target=QualityTarget.QUALITY_BETTER)
+        elif quality == 3:
+            self.device.set_configuration(quality_target=QualityTarget.QUALITY_BEST)
+        else:
+            LOGGER.error('Invalid quality value: {}'.format(quality))
+
+    def set_night_off(self, command):
+        self.device.set_configuration(night_mode=NightMode.NIGHT_MODE_OFF)
+
+    def set_night_on(self, command):
+        self.device.set_configuration(night_mode=NightMode.NIGHT_MODE_ON)
+
+    drivers = [{'driver': 'ST', 'value': 0, 'uom': 25},
+               {'driver': 'CLITEMP', 'value': 0, 'uom': 4},
+               {'driver': 'GV0', 'value': 0, 'uom': 17},
+               {'driver': 'CLIHUM', 'value': 0, 'uom': 22},
+               {'driver': 'GV1', 'value': 0, 'uom': 56},
+               {'driver': 'VOCLVL', 'value': 0, 'uom': 56},
+               {'driver': 'GV4', 'value': 0, 'uom': 2},
+               {'driver': 'GV5', 'value': 0, 'uom': 2},
+               {'driver': 'GV6', 'value': 0, 'uom': 25},
+               {'driver': 'GV7', 'value': 0, 'uom': 2},
+               {'driver': 'GV8', 'value': 0, 'uom': 51},
+               {'driver': 'GV10', 'value': 0, 'uom': 45}
+              ]
+
+    id = 'DYPFANV1'
+
+    commands = {
+            'QUERY': query, 'DON': set_on, 'DOF': set_off, 'SPEED': set_speed, 'OFFTMR': set_off_timer, 'AUTO': set_auto, 'OSCON': set_oscillation_on,
+            'OSCOFF': set_oscillation_off, 'NIGHTON': set_night_on, 'NIGHTOFF': set_night_off, 'STBYON': set_standby_mon_on, 'STBYOFF': set_standby_mon_off,
+            'RSTFLT': reset_filter_life, 'SETQAL': set_quality
                }
 
 

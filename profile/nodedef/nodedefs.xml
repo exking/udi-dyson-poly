@@ -58,4 +58,46 @@
             </accepts>
         </cmds>
     </nodeDef>
+    <nodeDef id="DYPFANV1" nls="PFANV1">
+        <editors />
+        <sts>
+            <st id="ST" editor="PFANST" />
+            <st id="CLITEMP" editor="TEMPC" />
+            <st id="GV0" editor="TEMPF" />
+            <st id="CLIHUM" editor="HUM" />
+            <st id="GV1" editor="AQVAL" />
+            <st id="VOCLVL" editor="AQVAL" />
+            <st id="GV4" editor="BOOL" />
+            <st id="GV5" editor="BOOL" />
+            <st id="GV6" editor="QTGT" />
+            <st id="GV7" editor="BOOL" />
+            <st id="GV8" editor="PERCENT" />
+            <st id="GV10" editor="MINUTES" />
+        </sts>
+        <cmds>
+            <sends />
+            <accepts>
+                <cmd id="QUERY" />
+                <cmd id="DON" />
+                <cmd id="DOF" />
+                <cmd id="SPEED" >
+		    <p id="" editor="PFANST" init="ST" />
+		</cmd>
+                <cmd id="AUTO" />
+                <cmd id="OSCON" />
+                <cmd id="OSCOFF" />
+                <cmd id="SETQAL" >
+		    <p id="" editor="QTGT" init="GV6" />
+		</cmd>
+                <cmd id="OFFTMR" >
+		    <p id="" editor="MINUTES" init="GV10" />
+		</cmd>
+                <cmd id="NIGHTOFF" />
+                <cmd id="NIGHTON" />
+                <cmd id="STBYOFF" />
+                <cmd id="STBYON" />
+                <cmd id="RSTFLT" />
+            </accepts>
+        </cmds>
+    </nodeDef>
 </nodeDefs>
