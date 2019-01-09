@@ -12,7 +12,7 @@
         {
             "title": "NodeServer to integrate with Dyson purifying fan",
             "author": "xKing",
-            "version": "0.0.2",
+            "version": "0.0.3",
             "date": "July 16, 2018",
             "source": "https://github.com/exking/udi-dyson-poly",
             "license": "https://raw.githubusercontent.com/exking/udi-dyson-poly/master/LICENSE"

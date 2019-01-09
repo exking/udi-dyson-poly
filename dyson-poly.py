@@ -475,7 +475,7 @@ class DysonPureFanV1(polyinterface.Node):
                {'driver': 'GV5', 'value': 0, 'uom': 2},
                {'driver': 'GV6', 'value': 0, 'uom': 25},
                {'driver': 'GV7', 'value': 0, 'uom': 2},
-               {'driver': 'GV8', 'value': 0, 'uom': 51},
+               {'driver': 'GV8', 'value': 0, 'uom': 20},
                {'driver': 'GV10', 'value': 0, 'uom': 45}
               ]
 

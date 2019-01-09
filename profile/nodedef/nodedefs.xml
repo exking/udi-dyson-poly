@@ -71,7 +71,7 @@
             <st id="GV5" editor="BOOL" />
             <st id="GV6" editor="QTGT" />
             <st id="GV7" editor="BOOL" />
-            <st id="GV8" editor="PERCENT" />
+            <st id="GV8" editor="HOURS" />
             <st id="GV10" editor="MINUTES" />
         </sts>
         <cmds>
