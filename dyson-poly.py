@@ -2,6 +2,7 @@
 
 import polyinterface
 import sys
+import json
 from libpurecoollink.dyson import DysonAccount
 from libpurecoollink.const import DYSON_PURE_COOL, DYSON_PURE_COOL_DESKTOP, DYSON_PURE_COOL_LINK_TOUR, FanPower, AutoMode, Oscillation, OscillationV2, FanSpeed, FrontalDirection, NightMode, FanMode, FanState, ResetFilter, StandbyMonitoring, QualityTarget
 from libpurecoollink.dyson_pure_state_v2 import DysonPureCoolV2State, DysonEnvironmentalSensorV2State
@@ -17,6 +18,7 @@ class Controller(polyinterface.Controller):
         self.address = 'dysonctrl'
         self.primary = self.address
         self.dyson = None
+        self.devlist = None
 
     def start(self):
         # LOGGER.setLevel(logging.INFO)
@@ -36,6 +38,12 @@ class Controller(polyinterface.Controller):
         except Exception as ex:
             LOGGER.error('ERROR connecting to the Dyson API: {}'.format(ex))
             return
+        if 'devlist' in self.polyConfig['customParams']:
+            try:
+                self.devlist = json.loads(self.polyConfig['customParams']['devlist'])
+            except Exception as ex:
+                LOGGER.error('Failed to parse the devlist: {}'.format(ex))
+                return False
         logged_in = self.dyson.login()
         if not logged_in:
             LOGGER.error('Failed to login to Dyson account')
@@ -81,9 +89,23 @@ class DysonPureFan(polyinterface.Node):
 
     def start(self):
         LOGGER.info('Starting {}'.format(self.device.name))
-        self.device.auto_connect()
+        self._connect()
         self.updateInfo()
         self.device.add_message_listener(self.on_message)
+
+    def _connect(self):
+        if self.controller.devlist:
+            LOGGER.info('Looking for device IP in the devlist...')
+            for dev in self.controller.devlist:
+                if 'sn' not in dev or 'ip' not in dev:
+                    LOGGER.error('Invalid entry: {}'.format(dev))
+                else:
+                    if dev['sn'] == self.address:
+                        LOGGER.info('Found IP {} for SN {}'.format(dev['ip'], dev['sn']))
+                        self.device.connect(dev['ip'])
+                        return
+        LOGGER.info('Trying auto connect...')
+        self.device.auto_connect()
 
     def on_message(self, msg):
         if isinstance(msg, DysonPureCoolV2State):
@@ -272,9 +294,23 @@ class DysonPureFanV1(polyinterface.Node):
 
     def start(self):
         LOGGER.info('Starting {}'.format(self.device.name))
-        self.device.auto_connect()
+        self._connect()
         self.updateInfo()
         self.device.add_message_listener(self.on_message)
+
+    def _connect(self):
+        if self.controller.devlist:
+            LOGGER.info('Looking for device IP in the devlist...')
+            for dev in self.controller.devlist:
+                if 'sn' not in dev or 'ip' not in dev:
+                    LOGGER.error('Invalid entry: {}'.format(dev))
+                else:
+                    if dev['sn'] == self.address:
+                        LOGGER.info('Found IP {} for SN {}'.format(dev['ip'], dev['sn']))
+                        self.device.connect(dev['ip'])
+                        return
+        LOGGER.info('Trying auto connect...')
+        self.device.auto_connect()
 
     def on_message(self, msg):
         if isinstance(msg, DysonPureCoolState):
