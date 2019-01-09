@@ -388,8 +388,7 @@ class DysonPureFanV1(polyinterface.Node):
             self.setDriver('GV5', 1)
         else:
             self.setDriver('GV5', 0)
-        self.setDriver('GV8', int(self.device.state.filter_state))
-        self.setDriver('GV9', int(self.device.state.hepa_filter_state))
+        self.setDriver('GV8', int(self.device.state.filter_life))
         self.setDriver('GV10', int(self.device.environmental_state.sleep_timer))
         if self.device.state.quality_target == QualityTarget.QUALITY_NORMAL.value:
             self.setDriver('GV6', 1)
