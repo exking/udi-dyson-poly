@@ -352,7 +352,7 @@ class DysonPureFanV1(polyinterface.Node):
             self.setDriver('GV0', tempF)
             self.setDriver('CLIHUM', int(msg.humidity))
             self.setDriver('GV1', int(msg.dust))
-            self.setDriver('VOCLVL', int(msg.volatile_organic_compounds))
+            self.setDriver('VOCLVL', int(msg.volatil_organic_compounds))
             self.setDriver('GV10', int(msg.sleep_timer))
         else:
             LOGGER.warning('Unknown message received for {}'.format(self.device.name))
@@ -379,7 +379,7 @@ class DysonPureFanV1(polyinterface.Node):
         self.setDriver('GV0', tempF)
         self.setDriver('CLIHUM', int(self.device.environmental_state.humidity))
         self.setDriver('GV1', int(self.device.environmental_state.dust))
-        self.setDriver('VOCLVL', int(self.device.environmental_state.volatile_organic_compounds))
+        self.setDriver('VOCLVL', int(self.device.environmental_state.volatil_organic_compounds))
         if self.device.state.oscillation == Oscillation.OSCILLATION_ON.value:
             self.setDriver('GV4', 1)
         else:
