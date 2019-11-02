@@ -3,10 +3,10 @@
 import polyinterface
 import sys
 import json
-from libpurecoollink.dyson import DysonAccount
-from libpurecoollink.const import DYSON_PURE_COOL, DYSON_PURE_COOL_DESKTOP, DYSON_PURE_COOL_LINK_TOUR, FanPower, AutoMode, Oscillation, OscillationV2, FanSpeed, FrontalDirection, NightMode, FanMode, FanState, ResetFilter, StandbyMonitoring, QualityTarget
-from libpurecoollink.dyson_pure_state_v2 import DysonPureCoolV2State, DysonEnvironmentalSensorV2State
-from libpurecoollink.dyson_pure_state import DysonPureCoolState, DysonEnvironmentalSensorState
+from libpurecool.dyson import DysonAccount
+from libpurecool.const import DYSON_PURE_COOL, DYSON_PURE_COOL_DESKTOP, DYSON_PURE_COOL_LINK_TOUR, FanPower, AutoMode, Oscillation, OscillationV2, FanSpeed, FrontalDirection, NightMode, FanMode, FanState, ResetFilter, StandbyMonitoring, QualityTarget
+from libpurecool.dyson_pure_state_v2 import DysonPureCoolV2State, DysonEnvironmentalSensorV2State
+from libpurecool.dyson_pure_state import DysonPureCoolState, DysonEnvironmentalSensorState
 
 LOGGER = polyinterface.LOGGER
 
