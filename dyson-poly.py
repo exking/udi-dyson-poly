@@ -366,7 +366,7 @@ class DysonPureFanV1(polyinterface.Node):
         LOGGER.debug(self.device.state)
         LOGGER.debug(self.device.environmental_state)
         if self.device.state.fan_state == FanState.FAN_ON.value:
-            if self.device.state.fan_mode == FanMode.AUTO_ON.value:
+            if self.device.state.fan_mode == FanMode.AUTO.value:
                 self.setDriver('ST', 11)
             else:
                 self.setDriver('ST', int(self.device.state.speed))
