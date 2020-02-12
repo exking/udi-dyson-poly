@@ -1,2 +1,2 @@
-polyinterface>=2.0.29
-libpurecool>=0.5.0
+polyinterface>=2.0.31
+libpurecool>=0.6.1
