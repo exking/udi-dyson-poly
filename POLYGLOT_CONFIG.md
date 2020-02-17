@@ -8,3 +8,4 @@ This Poly provides an interface between Dyson devices and [Polyglot v2](https://
   - `username` - your Dyson account username
   - `password` - your Dyson account password
   - `country` - 2 letter country code, defaults to `US` if not specified.
+  - `devlist` - optional: list your machines like this `[{"sn": "vs3usabc1234a", "ip": "10.0.1.3"}, { ... }]`
