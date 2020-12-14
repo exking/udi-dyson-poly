@@ -4,7 +4,7 @@ import polyinterface
 import sys
 import json
 from libpurecool.dyson import DysonAccount
-from libpurecool.const import DYSON_PURE_COOL, DYSON_PURE_COOL_DESKTOP, DYSON_PURE_COOL_LINK_TOUR, FanPower, AutoMode, Oscillation, OscillationV2, FanSpeed, FrontalDirection, NightMode, FanMode, FanState, ResetFilter, StandbyMonitoring, QualityTarget
+from libpurecool.const import DYSON_PURE_COOL, DYSON_PURE_COOL_DESKTOP, DYSON_PURE_COOL_LINK_TOUR, DYSON_PURE_HOT_COOL, FanPower, AutoMode, Oscillation, OscillationV2, FanSpeed, FrontalDirection, NightMode, FanMode, FanState, ResetFilter, StandbyMonitoring, QualityTarget
 from libpurecool.dyson_pure_state_v2 import DysonPureCoolV2State, DysonEnvironmentalSensorV2State
 from libpurecool.dyson_pure_state import DysonPureCoolState, DysonEnvironmentalSensorState
 
@@ -68,7 +68,7 @@ class Controller(polyinterface.Controller):
             address = dev.serial.replace('-','').lower()[:14]
             name = dev.name
             if not address in self.nodes:
-                if dev.product_type == DYSON_PURE_COOL or dev.product_type == DYSON_PURE_COOL_DESKTOP:
+                if dev.product_type == DYSON_PURE_COOL or dev.product_type == DYSON_PURE_COOL_DESKTOP or dev.product_type == DYSON_PURE_HOT_COOL:
                     LOGGER.info('Adding v2 product: {}, name: {}'.format(dev.product_type, dev.name))
                     self.addNode(DysonPureFan(self, self.address, address, name, dev))
                 elif dev.product_type == DYSON_PURE_COOL_LINK_TOUR:
