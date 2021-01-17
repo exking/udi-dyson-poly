@@ -23,6 +23,10 @@ ST-PFAN-GV7-NAME = Osciallation Angle High
 ST-PFAN-GV8-NAME = Carbon Filter Life
 ST-PFAN-GV9-NAME = HEPA Filter Life
 ST-PFAN-GV10-NAME = Off timer
+ST-PFAN-GV11-NAME = Tilted
+ST-PFAN-CLIHSP-NAME = Heat SetPoint
+ST-PFAN-CLIMD-NAME = Heat Mode
+ST-PFAN-CLIHCS-NAME = Heat State
 
 CMD-PFAN-QUERY-NAME = Query
 CMD-PFAN-DON-NAME = On

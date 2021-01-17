@@ -8,6 +8,9 @@
     <editor id="TEMPF">
         <range uom="17" min="-4" max="122" prec="1" />
     </editor>
+    <editor id="HTEMPF">
+        <range uom="17" min="34" max="98" prec="1" />
+    </editor>
     <editor id="HUM">
         <range uom="22" min="0" max="100" prec="0" />
     </editor>
@@ -37,5 +40,11 @@
     </editor>
     <editor id="QTGT">
         <range uom="25" min="1" max="3" nls="Q_TARGET" />
+    </editor>
+    <editor id="TMODE">
+        <range uom="67" subset="0,1" />
+    </editor>
+    <editor id="TSTATE">
+        <range uom="66" subset="0,1" />
     </editor>
 </editors>

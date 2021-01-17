@@ -58,6 +58,63 @@
             </accepts>
         </cmds>
     </nodeDef>
+    <nodeDef id="DYPHFAN" nls="PFAN">
+        <editors />
+        <sts>
+            <st id="ST" editor="PFANST" />
+            <st id="CLITEMP" editor="TEMPC" />
+            <st id="GV0" editor="TEMPF" />
+            <st id="CLIHUM" editor="HUM" />
+            <st id="GV1" editor="AQVAL" />
+            <st id="GV2" editor="AQVAL" />
+            <st id="VOCLVL" editor="AQVAL" />
+            <st id="GV3" editor="AQVAL" />
+            <st id="GV4" editor="BOOL" />
+            <st id="AIRFLOW" editor="AFDIR" />
+            <st id="GV5" editor="BOOL" />
+            <st id="GV6" editor="ANGLE" />
+            <st id="GV7" editor="ANGLE" />
+            <st id="GV8" editor="PERCENT" />
+            <st id="GV9" editor="PERCENT" />
+            <st id="GV10" editor="MINUTES" />
+            <st id="CLISPH" editor="HTEMPF" />
+            <st id="CLIMD" editor="TMODE" />
+            <st id="CLIHCS" editor="TSTATE" />
+            <st id="GV11" editor="BOOL" />
+        </sts>
+        <cmds>
+            <sends />
+            <accepts>
+                <cmd id="QUERY" />
+                <cmd id="DON" />
+                <cmd id="DOF" />
+                <cmd id="SPEED" >
+		    <p id="" editor="PFANST" init="ST" />
+		</cmd>
+                <cmd id="AUTO" />
+                <cmd id="ROTATE" >
+		    <p id="" editor="OSCANGL" />
+		</cmd>
+                <cmd id="ANGLE" >
+		    <p id="L" editor="ANGLE" init="GV6" />
+		    <p id="H" editor="ANGLE" init="GV7" />
+		</cmd>
+                <cmd id="AFFWD" />
+                <cmd id="AFREW" />
+                <cmd id="OFFTMR" >
+		    <p id="" editor="MINUTES" init="GV10" />
+		</cmd>
+                <cmd id="NIGHTOFF" />
+                <cmd id="NIGHTON" />
+                <cmd id="CLIMD" >
+		    <p id="" editor="TMODE" init="CLIMD" />
+		</cmd>
+                <cmd id="CLISPH" >
+		    <p id="" editor="TEMPF" init="CLISPH" />
+		</cmd>
+            </accepts>
+        </cmds>
+    </nodeDef>
     <nodeDef id="DYPFANV1" nls="PFANV1">
         <editors />
         <sts>

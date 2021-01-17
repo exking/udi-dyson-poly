@@ -4,8 +4,8 @@ import polyinterface
 import sys
 import json
 from libpurecool.dyson import DysonAccount
-from libpurecool.const import DYSON_PURE_COOL, DYSON_PURE_COOL_DESKTOP, DYSON_PURE_COOL_LINK_TOUR, DYSON_PURE_HOT_COOL, DYSON_PURE_COOL_HUMIDIFY, FanPower, AutoMode, Oscillation, OscillationV2, FanSpeed, FrontalDirection, NightMode, FanMode, FanState, ResetFilter, StandbyMonitoring, QualityTarget
-from libpurecool.dyson_pure_state_v2 import DysonPureCoolV2State, DysonEnvironmentalSensorV2State
+from libpurecool.const import DYSON_PURE_COOL, DYSON_PURE_COOL_DESKTOP, DYSON_PURE_COOL_LINK_TOUR, DYSON_PURE_HOT_COOL, DYSON_PURE_COOL_HUMIDIFY, FanPower, AutoMode, Oscillation, OscillationV2, FanSpeed, FrontalDirection, NightMode, FanMode, FanState, ResetFilter, StandbyMonitoring, QualityTarget, TiltState, HeatMode, HeatState, HeatTarget
+from libpurecool.dyson_pure_state_v2 import DysonPureCoolV2State, DysonEnvironmentalSensorV2State, DysonPureHotCoolV2State
 from libpurecool.dyson_pure_state import DysonPureCoolState, DysonEnvironmentalSensorState
 
 LOGGER = polyinterface.LOGGER
@@ -68,9 +68,12 @@ class Controller(polyinterface.Controller):
             address = dev.serial.replace('-','').lower()[:14]
             name = dev.name
             if not address in self.nodes:
-                if dev.product_type in [DYSON_PURE_COOL, DYSON_PURE_COOL_DESKTOP, DYSON_PURE_HOT_COOL, DYSON_PURE_COOL_HUMIDIFY]:
+                if dev.product_type in [DYSON_PURE_COOL, DYSON_PURE_COOL_DESKTOP, DYSON_PURE_COOL_HUMIDIFY]:
                     LOGGER.info('Adding v2 product: {}, name: {}'.format(dev.product_type, dev.name))
                     self.addNode(DysonPureFan(self, self.address, address, name, dev))
+                elif dev.product_type == DYSON_PURE_HOT_COOL:
+                    LOGGER.info('Adding v2 product: {}, name: {}'.format(dev.product_type, dev.name))
+                    self.addNode(DysonPureHeatFan(self, self.address, address, name, dev))
                 elif dev.product_type == DYSON_PURE_COOL_LINK_TOUR:
                     LOGGER.info('Adding v1 product: {}, name: {}'.format(dev.product_type, dev.name))
                     self.addNode(DysonPureFanV1(self, self.address, address, name, dev))
@@ -286,6 +289,170 @@ class DysonPureFan(polyinterface.Node):
             'ANGLE': set_osc_angle, 'AFFWD': set_airflow_fwd, 'AFREW': set_airflow_rew, 'NIGHTON': set_night_on, 'NIGHTOFF': set_night_off
                }
 
+
+class DysonPureHeatFan(DysonPureFan):
+    def __init__(self, controller, primary, address, name, device):
+        super().__init__(controller, primary, address, name, device)
+        self.device = device
+
+    def on_message(self, msg):
+        if isinstance(msg, DysonPureHotCoolV2State):
+            LOGGER.debug('Received State message for {}'.format(self.device.name))
+            if msg.fan_power == FanPower.POWER_ON.value:
+                if msg.auto_mode == AutoMode.AUTO_ON.value:
+                    self.setDriver('ST', 11)
+                else:
+                    self.setDriver('ST', int(msg.speed))
+            else:
+                self.setDriver('ST', 0)
+            if msg.oscillation == OscillationV2.OSCILLATION_ON.value:
+                self.setDriver('GV4', 1)
+            else:
+                self.setDriver('GV4', 0)
+            if msg.front_direction == FrontalDirection.FRONTAL_ON.value:
+                self.setDriver('AIRFLOW', 0)
+            else:
+                self.setDriver('AIRFLOW', 1)
+            if msg.night_mode == 'ON':
+                self.setDriver('GV5', 1)
+            else:
+                 self.setDriver('GV5', 0)
+            self.setDriver('GV6', int(msg.oscillation_angle_low))
+            self.setDriver('GV7', int(msg.oscillation_angle_high))
+            self.setDriver('GV8', int(msg.carbon_filter_state))
+            self.setDriver('GV9', int(msg.hepa_filter_state))
+            # these are Heater Specific
+            if msg.tilt == TiltState.TILT_TRUE.value:
+                self.setDriver('GV11', 1)
+            else:
+                self.setDriver('GV11', 0)
+            if msg.heat_mode == HeatMode.HEAT_ON.value:
+                self.setDriver('CLIMD', 1)
+            else:
+                self.setDriver('CLIMD', 0)
+            if msg.heat_state == HeatState.HEAT_STATE_ON.value:
+                self.setDriver('CLIHCS', 1)
+            else:
+                self.setDriver('CLIHCS', 0)
+            heat_sp = float(msg.heat_target)
+            heat_sp_f = round(heat_sp * 9 / 5 - 459.67, 2)
+            # heat_sp_c = round(heat_sp - 273.15, 2)
+            self.setDriver('CLISPH', heat_sp_f)
+        elif isinstance(msg, DysonEnvironmentalSensorV2State):
+            LOGGER.debug('Received Environmental State message for {}'.format(self.device.name))
+            temp = float(msg.temperature)
+            tempC = round(temp - 273.15, 2)
+            tempF = round(temp * 9 / 5 - 459.67, 2)
+            self.setDriver('CLITEMP', tempC)
+            self.setDriver('GV0', tempF)
+            self.setDriver('CLIHUM', int(msg.humidity))
+            self.setDriver('GV1', int(msg.particulate_matter_25))
+            self.setDriver('GV2', int(msg.particulate_matter_10))
+            self.setDriver('VOCLVL', int(msg.volatile_organic_compounds))
+            self.setDriver('GV3', int(msg.nitrogen_dioxide))
+            self.setDriver('GV10', int(msg.sleep_timer))
+        else:
+            LOGGER.warning('Unknown message received for {}'.format(self.device.name))
+        LOGGER.debug('Received message {}'.format(str(msg)))
+
+    def updateInfo(self):
+        LOGGER.debug(self.device.state)
+        LOGGER.debug(self.device.environmental_state)
+        if self.device.state.fan_power == FanPower.POWER_ON.value:
+            if self.device.state.auto_mode == AutoMode.AUTO_ON.value:
+                self.setDriver('ST', 11)
+            else:
+                self.setDriver('ST', int(self.device.state.speed))
+        else:
+            self.setDriver('ST', 0)
+        temp = float(self.device.environmental_state.temperature)
+        tempC = round(temp - 273.15, 2)
+        tempF = round(temp * 9 / 5 - 459.67, 2)
+        self.setDriver('CLITEMP', tempC)
+        self.setDriver('GV0', tempF)
+        self.setDriver('CLIHUM', int(self.device.environmental_state.humidity))
+        self.setDriver('GV1', int(self.device.environmental_state.particulate_matter_25))
+        self.setDriver('GV2', int(self.device.environmental_state.particulate_matter_10))
+        self.setDriver('VOCLVL', int(self.device.environmental_state.volatile_organic_compounds))
+        self.setDriver('GV3', int(self.device.environmental_state.nitrogen_dioxide))
+        if self.device.state.oscillation == OscillationV2.OSCILLATION_ON.value:
+            self.setDriver('GV4', 1)
+        else:
+            self.setDriver('GV4', 0)
+        if self.device.state.front_direction == FrontalDirection.FRONTAL_ON.value:
+            self.setDriver('AIRFLOW', 0)
+        else:
+            self.setDriver('AIRFLOW', 1)
+        if self.device.state.night_mode == 'ON':
+            self.setDriver('GV5', 1)
+        else:
+            self.setDriver('GV5', 0)
+        self.setDriver('GV6', int(self.device.state.oscillation_angle_low))
+        self.setDriver('GV7', int(self.device.state.oscillation_angle_high))
+        self.setDriver('GV8', int(self.device.state.carbon_filter_state))
+        self.setDriver('GV9', int(self.device.state.hepa_filter_state))
+        self.setDriver('GV10', int(self.device.environmental_state.sleep_timer))
+        if self.device.state.tilt == TiltState.TILT_TRUE.value:
+            self.setDriver('GV11', 1)
+        else:
+            self.setDriver('GV11', 0)
+
+        if self.device.state.heat_mode == HeatMode.HEAT_ON.value:
+            self.setDriver('CLIMD', 1)
+        else:
+            self.setDriver('CLIMD', 0)
+        if self.device.state.heat_state == HeatState.HEAT_STATE_ON.value:
+            self.setDriver('CLIHCS', 1)
+        else:
+            self.setDriver('CLIHCS', 0)
+        heat_sp = float(self.device.state.heat_target)
+        heat_sp_f = round(heat_sp * 9 / 5 - 459.67, 2)
+        # heat_sp_c = round(heat_sp - 273.15, 2)
+        self.setDriver('CLISPH', heat_sp_f)
+
+    def set_point_heat(self, command):
+        heat_sp = int(command.get('value'))
+        if 34 <= heat_sp <= 98:
+            self.device.set_heat_target(HeatTarget.fahrenheit(heat_sp))
+        else:
+            LOGGER.error(f'Invalid Heat Setpoint: {heat_sp}')
+
+    def set_heat_mode(self, command):
+        heat_mode = int(command.get('value'))
+        if heat_mode == 1:
+            self.device.enable_heat_mode()
+        else:
+            self.device.disable_heat_mode()
+
+    drivers = [{'driver': 'ST', 'value': 0, 'uom': 25},
+               {'driver': 'CLITEMP', 'value': 0, 'uom': 4},
+               {'driver': 'GV0', 'value': 0, 'uom': 17},
+               {'driver': 'CLIHUM', 'value': 0, 'uom': 22},
+               {'driver': 'GV1', 'value': 0, 'uom': 56},
+               {'driver': 'GV2', 'value': 0, 'uom': 56},
+               {'driver': 'VOCLVL', 'value': 0, 'uom': 56},
+               {'driver': 'GV3', 'value': 0, 'uom': 56},
+               {'driver': 'GV4', 'value': 0, 'uom': 2},
+               {'driver': 'AIRFLOW', 'value': 0, 'uom': 25},
+               {'driver': 'GV5', 'value': 0, 'uom': 2},
+               {'driver': 'GV6', 'value': 0, 'uom': 14},
+               {'driver': 'GV7', 'value': 0, 'uom': 14},
+               {'driver': 'GV8', 'value': 0, 'uom': 51},
+               {'driver': 'GV9', 'value': 0, 'uom': 51},
+               {'driver': 'GV10', 'value': 0, 'uom': 45},
+               {'driver': 'GV11', 'value': 0, 'uom': 2},
+               {'driver': 'CLISPH', 'value': 0, 'uom': 17},
+               {'driver': 'CLIMD', 'value': 0, 'uom': 67},
+               {'driver': 'CLIHCS', 'value': 0, 'uom': 66}
+              ]
+
+    id = 'DYPHFAN'
+
+    commands = {
+            'QUERY': query, 'DON': set_on, 'DOF': set_off, 'SPEED': set_speed, 'OFFTMR': set_off_timer, 'AUTO': set_auto, 'ROTATE': set_oscillation,
+            'ANGLE': set_osc_angle, 'AFFWD': set_airflow_fwd, 'AFREW': set_airflow_rew, 'NIGHTON': set_night_on, 'NIGHTOFF': set_night_off,
+            'CLISPH': set_point_heat, 'CLIMD': set_heat_mode
+               }
 
 class DysonPureFanV1(polyinterface.Node):
     def __init__(self, controller, primary, address, name, device):
