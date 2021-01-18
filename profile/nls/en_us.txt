@@ -7,6 +7,8 @@ ST-CTRL-ST-NAME = NodeServer Online
 # Dyson Purifying Fan
 ND-DYPFAN-NAME = Dyson Purifying Fan
 ND-DYPFAN-ICON = GenericRsp
+ND-DYPHFAN-NAME = Dyson Purifying Heater/Fan
+ND-DYPHFAN-ICON = GenericRsp
 ST-PFAN-ST-NAME = Fan State
 ST-PFAN-CLITEMP-NAME = Temp C
 ST-PFAN-GV0-NAME = Temp F
