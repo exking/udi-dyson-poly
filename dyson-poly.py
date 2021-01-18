@@ -335,8 +335,8 @@ class DysonPureHeatFan(DysonPureFan):
             else:
                 self.setDriver('CLIHCS', 0)
             heat_sp = float(msg.heat_target) / 10
-            heat_sp_f = int((heat_sp - 273.15) * 9 / 5 + 32)
-            # heat_sp_c = int(heat_sp - 273.15)
+            heat_sp_f = round((heat_sp - 273.15) * 9 / 5 + 32)
+            # heat_sp_c = round(heat_sp - 273.15)
             self.setDriver('CLISPH', heat_sp_f)
         elif isinstance(msg, DysonEnvironmentalSensorV2State):
             LOGGER.debug('Received Environmental State message for {}'.format(self.device.name))
@@ -406,8 +406,8 @@ class DysonPureHeatFan(DysonPureFan):
         else:
             self.setDriver('CLIHCS', 0)
         heat_sp = float(self.device.state.heat_target) / 10
-        heat_sp_f = int((heat_sp - 273.15) * 9 / 5 + 32)
-        # heat_sp_c = int(heat_sp - 273.15)
+        heat_sp_f = round((heat_sp - 273.15) * 9 / 5 + 32)
+        # heat_sp_c = round(heat_sp - 273.15)
         self.setDriver('CLISPH', heat_sp_f)
 
     def set_point_heat(self, command):
