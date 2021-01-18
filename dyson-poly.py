@@ -449,8 +449,8 @@ class DysonPureHeatFan(DysonPureFan):
     id = 'DYPHFAN'
 
     commands = {
-            'QUERY': query, 'DON': set_on, 'DOF': set_off, 'SPEED': set_speed, 'OFFTMR': set_off_timer, 'AUTO': set_auto, 'ROTATE': set_oscillation,
-            'ANGLE': set_osc_angle, 'AFFWD': set_airflow_fwd, 'AFREW': set_airflow_rew, 'NIGHTON': set_night_on, 'NIGHTOFF': set_night_off,
+            'QUERY': DysonPureFan.query, 'DON': DysonPureFan.set_on, 'DOF': DysonPureFan.set_off, 'SPEED': DysonPureFan.set_speed, 'OFFTMR': DysonPureFan.set_off_timer, 'AUTO': DysonPureFan.set_auto, 'ROTATE': DysonPureFan.set_oscillation,
+            'ANGLE': DysonPureFan.set_osc_angle, 'AFFWD': DysonPureFan.set_airflow_fwd, 'AFREW': DysonPureFan.set_airflow_rew, 'NIGHTON': DysonPureFan.set_night_on, 'NIGHTOFF': DysonPureFan.set_night_off,
             'CLISPH': set_point_heat, 'CLIMD': set_heat_mode
                }
 
